@@ -53,6 +53,7 @@ func TestRetry(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, 400, res.StatusCode)
 		assert.Nil(t, res.Body)
+		assert.Equal(t, 3, i)
 
 		assert.Equalf(t, 1, theOtherMiddleware,
 			"the other middleware should only be called once, even though the retry middleware is called 3 times.")

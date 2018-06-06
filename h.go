@@ -85,7 +85,6 @@ type Request struct {
 	Client          *Client
 	Header          http.Header
 	Request         *http.Request
-	MiddlewareIndex int
 	E               error
 }
 
@@ -117,18 +116,12 @@ func (r *Request) Run() (*http.Response, error) {
 	var res *http.Response
 	var e error
 
+	res, e = r.Client.Run(r)
+
 	// Let the client run the request.
-	for r.MiddlewareIndex <= len(r.Client.Middlewares) {
-		if r.MiddlewareIndex == 0 {
-			res, e = r.Client.Run(r)
-			r.MiddlewareIndex++
-		} else {
-			mid := r.Client.Middlewares[r.MiddlewareIndex-1]
-			res, e = mid(r, res, e)
-			if r.MiddlewareIndex != 0 {
-				r.MiddlewareIndex++
-			}
-		}
+	for i := 0; i < len(r.Client.Middlewares); i++ {
+		mid := r.Client.Middlewares[i]
+		res, e = mid(r, res, e)
 	}
 
 	return res, errors.WithStack(e)
