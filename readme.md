@@ -29,4 +29,4 @@ As you can see, a convenient method chaining API is provided.
 ### Plugins
 The power of `h` comes in with plugins. `h` itself has less than 120 lines of code. But it has a extendable design.
 
-`h/hplug` package provides several powerful plugins, including retries. Please see [hplug examples](hplug).
+`h/hplug` package provides several powerful plugins, including retries. Please see [hplug examples](plugin/retry/retry_test.go).

@@ -1,12 +1,10 @@
-package hplug
+package retry
 
 import (
-	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/CreatCodeBuild/h"
-	"github.com/segmentio/objconv/json"
 )
 
 // Retry x times per y seconds on timeout error.
@@ -26,20 +24,4 @@ func Retry(times int, second time.Duration) h.MiddlewareFunc {
 		}
 		return res, err
 	}
-}
-
-// JSON dumps response body to data, assuming it's of JSON format.
-// data should be a pointer.
-// It closes the body on success.
-// It does not close the body on error.
-func JSON(res http.Response, data interface{}) error {
-	b, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(b, data)
-	if err != nil {
-		return err
-	}
-	return res.Body.Close()
 }

@@ -1,4 +1,4 @@
-package hplug
+package retry
 
 import (
 	"net/http"
@@ -10,10 +10,12 @@ import (
 
 type testTransport struct{}
 
-type timeout func() bool
+type timeout struct {
+	t func() bool
+}
 
 func (t timeout) Timeout() bool {
-	return t()
+	return t.t()
 }
 
 func (t timeout) Error() string {
@@ -25,7 +27,7 @@ var i = 0
 func (t testTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if i < 3 {
 		i++
-		return nil, timeout(func() bool { return true })
+		return nil, timeout{t: func() bool { return true }}
 	}
 	return &http.Response{
 		StatusCode: 400,
@@ -58,9 +60,4 @@ func TestRetry(t *testing.T) {
 		assert.Equalf(t, 1, theOtherMiddleware,
 			"the other middleware should only be called once, even though the retry middleware is called 3 times.")
 	})
-
-}
-
-func TestJSON(t *testing.T) {
-
 }
