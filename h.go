@@ -11,7 +11,7 @@ import (
 type MiddlewareFunc func(r *Request, res *http.Response, err error) (*http.Response, error)
 
 type Client struct {
-	Client      http.Client      // the client interface
+	Client      *http.Client      // the client interface
 	BaseURL     string           // base url
 	Header      http.Header      // per Client common headers
 	Middlewares []MiddlewareFunc // middleware functions
@@ -21,6 +21,7 @@ type Client struct {
 func NewClient() *Client {
 	return &Client{
 		Header: make(http.Header),
+		Client: &http.Client{},
 	}
 }
 
