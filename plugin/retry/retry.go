@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/CreatCodeBuild/h"
+	"github.com/pkg/errors"
 )
 
 // Retry x times per y seconds on timeout error.
@@ -16,6 +17,7 @@ func Retry(times int, second time.Duration) h.MiddlewareFunc {
 			Timeout() bool
 		}
 
+		err = errors.Cause(err)
 		netErr, ok := err.(timeout)
 		for i := 0; ok && netErr.Timeout() && i < times; i++ {
 			time.Sleep(second * time.Second)

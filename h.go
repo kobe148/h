@@ -60,7 +60,7 @@ func (c *Client) Request(method string, path string) *Request {
 		Client:  c,
 		Request: r,
 		Header:  make(http.Header),
-		E:       e,
+		E:       errors.WithStack(e),
 	}
 }
 
@@ -77,8 +77,7 @@ func (c *Client) Run(r *Request) (*http.Response, error) {
 		r.Request.Header.Set(k, v[0])
 	}
 	res, e := r.Client.Client.Do(r.Request)
-
-	return res, e
+	return res, errors.WithStack(e)
 }
 
 // Request wraps a http.Request and is more powerful.
@@ -102,7 +101,7 @@ func (r *Request) SetBody(body io.Reader) *Request {
 		return nil
 	}
 	req, e := http.NewRequest(r.Request.Method, r.Request.URL.String(), body)
-	r.E = e
+	r.E = errors.WithStack(e)
 	r.Request = req
 	return r
 }
@@ -118,6 +117,7 @@ func (r *Request) Run() (*http.Response, error) {
 	var e error
 
 	res, e = r.Client.Run(r)
+	e = errors.WithStack(e)
 
 	// Let the client run the request.
 	for i := 0; i < len(r.Client.Middlewares); i++ {
